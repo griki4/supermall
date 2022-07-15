@@ -4,9 +4,11 @@
     <div v-if="!isActive">
       <slot name="item-icon"></slot>
     </div>
+
     <div v-else>
       <slot name="item-icon-active"></slot>
     </div>
+
     <div :style="activeStyle">
       <slot name="item-text"></slot>
     </div>
@@ -18,9 +20,10 @@
     name: "TabBarItem",
     props: {
       path: String,
+      //activeColor表示由使用组件的人决定组件活跃的时候显示什么颜色
       activeColor: {
         type: String,
-        default: 'red'
+        default: 'red'//外界不传入时设置的默认值
       }
     },
     data() {
@@ -35,6 +38,7 @@
         // /home -> item1(/category) = false
         // /home -> item1(/cart) = true
         // /home -> item1(/profile) = true
+        //当前组件的路由的path中是否包含我们从外界接收的这个path，是则说明该组件活跃
         return this.$route.path.indexOf(this.path) !== -1
       },
       activeStyle() {
@@ -45,6 +49,7 @@
     methods: {
       itemClick() {
         //点击某个item的时候会替换路由的路径，到达显示不同组件的效果
+        //path属性是外界使用TabBarItem组件的时候传入的参数
         this.$router.replace(this.path)
       }
     }

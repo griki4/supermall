@@ -1,5 +1,6 @@
 <template>
   <tab-bar>
+<!--    path属性用于实现路由跳转-->
     <tab-bar-item path="/home">
       <img slot="item-icon" src="~assets/img/tabbar/home.svg" alt="">
       <img slot="item-icon-active" src="~assets/img/tabbar/home_active.svg" alt="">
