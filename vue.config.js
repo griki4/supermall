@@ -5,7 +5,7 @@ module.exports = defineConfig({
   configureWebpack:{
     resolve:{
       alias:{
-        //配置文件夹别名，新版脚手架中
+        //配置文件夹别名，新版脚手架中貌似不再支持
         'assets':'@/assets',
         'common':'@/common',
         'components':'@/components',
