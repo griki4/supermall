@@ -1,7 +1,9 @@
 <template>
   <div id="app">
 <!--    切换路由展示views文件夹下的四个对应组件-->
-    <router-view></router-view>
+    <keep-alive>
+      <router-view></router-view>
+    </keep-alive>
     <main-tab-bar></main-tab-bar>
   </div>
 </template>
