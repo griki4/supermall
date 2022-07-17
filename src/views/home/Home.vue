@@ -15,7 +15,7 @@
       <tab-control class="tab-control" :titles="['流行', '新款', '精选']" @tabClick="tabClick"></tab-control>
       <goods-list :goods="showGoods"></goods-list >
     </scroll>
-    <back-top @click="backTop" v-show="showTop"></back-top>
+    <back-top @click.native="backTop" v-show="showTop"></back-top>
   </div>
 </template>
 
