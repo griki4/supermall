@@ -51,7 +51,6 @@ export default {
   },
   methods:{
     scrollTo(x, y, time=300) {
-      //scroll对象有值的时候才执行后面的方法
       this.scroll && this.scroll.scrollTo(x,y,time)
     },
     finishPullUp(){
@@ -59,8 +58,7 @@ export default {
     },
     refresh(){
       this.scroll && this.scroll.refresh()
-    }
-
+    },
   }
 }
 </script>
