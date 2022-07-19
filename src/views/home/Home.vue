@@ -64,7 +64,7 @@ import {getHomeMultidata, getHomeGoods} from "@/network/home";
       this.getHomeGoods('sell')
     },
     mounted() {
-      //监听图片加载完毕事件，执行重新计算滚动高度的函数
+      //监听图片加载完毕事件，执行重新计算滚动高度的函数，最好是在组件挂载而非创建的时候监听，否则容易拿不到scroll对象
       this.$bus.$on('imageLoadItem', ()=>{
         this.$refs.scroll.refresh()
       })
