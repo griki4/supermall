@@ -1,6 +1,6 @@
 <template>
 <!--  商品展示页的小组件，包含商品图片文字描述和价格等详细信息-->
-<div class="goods-item">
+<div class="goods-item" @click="itemClick">
     <img :src="goodsItem.show.img" @load="imageLoad">
   <div class="goods-info">
     <p>{{goodsItem.title}}</p>
@@ -24,6 +24,10 @@ export default {
   methods:{
     imageLoad(){
       this.$bus.$emit('imageLoadItem')
+    },
+    itemClick(){
+      //将商品的iid信息传递给详情页组件
+      this.$router.push('/detail/' + this.goodsItem.iid)
     }
   }
 }
