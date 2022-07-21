@@ -4,7 +4,7 @@
     <swiper>
       <swiper-item v-for="(item, index) in banners" :key="index">
         <a :href="item.link">
-           <img :src="item.image">
+           <img :src="item.image" @load="imageLoad">
         </a>
       </swiper-item>
     </swiper>
@@ -23,6 +23,20 @@ export default {
       type:Array,
       default(){
         return []
+      }
+    }
+  },
+  data(){
+    return {
+     isLoad: false
+    }
+  },
+  methods:{
+    imageLoad() {
+      //只触发一次事件，因为只需要一张轮播图的图片就能直到offsetTop的准确值
+      if (!this.isLoad) {
+        this.$emit('swiperImageLoad')
+        this.isLoad = true
       }
     }
   }

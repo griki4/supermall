@@ -3,16 +3,19 @@
     <nav-bar class="home-nav">
       <div slot="center">购物街</div>
     </nav-bar>
+<!--    实际效果是tabControl2一直随着scroll滚动，当它滚动超过某个范围的时候tabControl1替换它显示，并且tabControl1和tabControl2全部内容都保持一致
+tabControl2随着scroll滚动已经滚出页面了，不过tabControl1在超过某个范围时接替了它进行显示，此前它一直处于隐藏状态-->
+    <tab-control :titles="['流行', '新款', '精选']" @tabClick="tabClick" ref="tabControl1" v-show="isTabFixed" class="tabControl"></tab-control>
     <scroll class="content"
             ref="scroll"
             :probe-type="3"
             @scroll="contentScroll"
             @pullingUp="loadMore"
             :pull-up-load="true">
-      <home-swiper :banners="banners"></home-swiper>
+      <home-swiper :banners="banners" @swiperImageLoad="swiperImageLoad"></home-swiper>
       <home-recommend-view :recommends="recommends"></home-recommend-view>
       <feature-view></feature-view>
-      <tab-control class="tab-control" :titles="['流行', '新款', '精选']" @tabClick="tabClick"></tab-control>
+      <tab-control :titles="['流行', '新款', '精选']" @tabClick="tabClick" ref="tabControl2"></tab-control>
       <goods-list :goods="showGoods"></goods-list >
     </scroll>
     <back-top @click.native="backTop" v-show="showTop"></back-top>
@@ -29,6 +32,8 @@ import GoodsList from "@/components/content/goods/GoodsList";
 import TabControl from "@/components/content/tabControl/TabControl";
 import Scroll from "@/components/common/scroll/Scroll";
 import BackTop from "@/components/content/backtop/BackTop";
+
+import {debounce} from "@/common/utils";
 
 import {getHomeMultidata, getHomeGoods} from "@/network/home";
 
@@ -53,7 +58,10 @@ import {getHomeMultidata, getHomeGoods} from "@/network/home";
           sell:{page: 0, list: []}
         },
         currentType:'pop',
-        showTop:false
+        showTop:false,
+        tabOffsetTop: 0,
+        //吸顶样式
+        isTabFixed:false
       }
     },
     //组件创建完毕后就发送网络请求，获取制作轮播图所需要的数据
@@ -64,9 +72,11 @@ import {getHomeMultidata, getHomeGoods} from "@/network/home";
       this.getHomeGoods('sell')
     },
     mounted() {
+      const refresh = debounce(this.$refs.scroll.refresh, 50)
       //监听图片加载完毕事件，执行重新计算滚动高度的函数，最好是在组件挂载而非创建的时候监听，否则容易拿不到scroll对象
       this.$bus.$on('imageLoadItem', ()=>{
-        this.$refs.scroll.refresh()
+        // this.$refs.scroll.refresh()//每张图片加载都要刷新，过于频繁。需要采取防抖处理。
+        refresh()//频繁调用时，debounce会清除掉上一次的定时器并开启一个新的定时器
       })
     },
     computed:{
@@ -87,6 +97,13 @@ import {getHomeMultidata, getHomeGoods} from "@/network/home";
           case 2:
             this.currentType = 'sell'
         }
+        //让吸顶的tabControl和滚动的tabControl选中的标签保持一致
+        this.$refs.tabControl1.currentIndex = index
+        this.$refs.tabControl2.currentIndex = index
+      },
+      swiperImageLoad(){
+        //获取tabControl组件的根元素，在mounted中获取的时候可能轮播图的图片还未加载完成
+        this.tabOffsetTop = this.$refs.tabControl2.$el.offsetTop
       },
       backTop(){
         //点击图标后返回至滚动开始的位置
@@ -94,7 +111,10 @@ import {getHomeMultidata, getHomeGoods} from "@/network/home";
         this.$refs.scroll.scrollTo(0,0)//将scrollTo方法进行封装
       },
       contentScroll(position) {
+        //决定BackTop是否显示
         this.showTop = Math.abs(position.y) > 1000
+        //决定tabControl是否吸顶，超过阈值就启用吸顶效果
+        this.isTabFixed = Math.abs(position.y) > this.tabOffsetTop
       },
       loadMore(){
         this.getHomeGoods(this.currentType)
@@ -112,7 +132,8 @@ import {getHomeMultidata, getHomeGoods} from "@/network/home";
         getHomeGoods(type, page).then(res => {
           this.goods[type].list.push(...res.data.list)//新请求的数据放入之前的list中但是是新的页数
           this.goods[type].page += 1
-          this.$refs.scroll.finishPullUp()//多次上拉则加载更多内容
+          //完成上拉加载更多
+          this.$refs.scroll.finishPullUp()
         })
       },
 
@@ -138,6 +159,10 @@ import {getHomeMultidata, getHomeGoods} from "@/network/home";
      z-index: 9*/
    }
 
+   .tab-control {
+     position: relative;
+     z-index: 9;
+   }
    .content {
      overflow: hidden;
      position: absolute;
@@ -146,11 +171,5 @@ import {getHomeMultidata, getHomeGoods} from "@/network/home";
      right: 0;
      bottom: 49px;
    }
-
-   .tab-control{
-     position: sticky;
-     top: 44px;
-   }
-
 
 </style>
