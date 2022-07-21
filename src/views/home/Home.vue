@@ -61,9 +61,12 @@ import {getHomeMultidata, getHomeGoods} from "@/network/home";
         showTop:false,
         tabOffsetTop: 0,
         //吸顶样式
-        isTabFixed:false
+        isTabFixed:false,
+        //保持Home位置的数据
+        saveY: 0
       }
     },
+
     //组件创建完毕后就发送网络请求，获取制作轮播图所需要的数据
     created() {
       this.getHomeMultidata()
@@ -71,6 +74,7 @@ import {getHomeMultidata, getHomeGoods} from "@/network/home";
       this.getHomeGoods('new')
       this.getHomeGoods('sell')
     },
+
     mounted() {
       const refresh = debounce(this.$refs.scroll.refresh, 50)
       //监听图片加载完毕事件，执行重新计算滚动高度的函数，最好是在组件挂载而非创建的时候监听，否则容易拿不到scroll对象
@@ -79,6 +83,18 @@ import {getHomeMultidata, getHomeGoods} from "@/network/home";
         refresh()//频繁调用时，debounce会清除掉上一次的定时器并开启一个新的定时器
       })
     },
+
+    activated() {
+      this.$refs.scroll.scrollTo(0, this.saveY, 0)
+      //组件激活时最好重新refresh一次防止出现bug
+      this.$refs.scroll.refresh()
+    },
+
+    deactivated() {
+      //切换路由组件的时候保存当前页面滚动位置的信息
+      this.saveY = this.$refs.scroll.getScrollY()
+    },
+
     computed:{
       showGoods() {
         return this.goods[this.currentType].list
@@ -101,21 +117,26 @@ import {getHomeMultidata, getHomeGoods} from "@/network/home";
         this.$refs.tabControl1.currentIndex = index
         this.$refs.tabControl2.currentIndex = index
       },
+
       swiperImageLoad(){
         //获取tabControl组件的根元素，在mounted中获取的时候可能轮播图的图片还未加载完成
         this.tabOffsetTop = this.$refs.tabControl2.$el.offsetTop
       },
+
       backTop(){
         //点击图标后返回至滚动开始的位置
         // this.$refs.scroll.scroll.scrollTo(0,0,500)
         this.$refs.scroll.scrollTo(0,0)//将scrollTo方法进行封装
       },
+
       contentScroll(position) {
         //决定BackTop是否显示
         this.showTop = Math.abs(position.y) > 1000
         //决定tabControl是否吸顶，超过阈值就启用吸顶效果
         this.isTabFixed = Math.abs(position.y) > this.tabOffsetTop
       },
+
+      //加载更多商品信息的方法
       loadMore(){
         this.getHomeGoods(this.currentType)
       },
