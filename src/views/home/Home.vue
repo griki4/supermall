@@ -33,7 +33,7 @@ import TabControl from "@/components/content/tabControl/TabControl";
 import Scroll from "@/components/common/scroll/Scroll";
 import BackTop from "@/components/content/backtop/BackTop";
 
-import {debounce} from "@/common/utils";
+import {itemImageListenerMixin} from "@/common/mixin";
 
 import {getHomeMultidata, getHomeGoods} from "@/network/home";
 
@@ -48,6 +48,7 @@ import {getHomeMultidata, getHomeGoods} from "@/network/home";
       Scroll,
       BackTop
     },
+    mixins:[itemImageListenerMixin],
     data(){
       return{
         banners:[],
@@ -63,7 +64,7 @@ import {getHomeMultidata, getHomeGoods} from "@/network/home";
         //吸顶样式
         isTabFixed:false,
         //保持Home位置的数据
-        saveY: 0
+        saveY: 0,
       }
     },
 
@@ -76,12 +77,7 @@ import {getHomeMultidata, getHomeGoods} from "@/network/home";
     },
 
     mounted() {
-      const refresh = debounce(this.$refs.scroll.refresh, 50)
-      //监听图片加载完毕事件，执行重新计算滚动高度的函数，最好是在组件挂载而非创建的时候监听，否则容易拿不到scroll对象
-      this.$bus.$on('imageLoadItem', ()=>{
-        // this.$refs.scroll.refresh()//每张图片加载都要刷新，过于频繁。需要采取防抖处理。
-        refresh()//频繁调用时，debounce会清除掉上一次的定时器并开启一个新的定时器
-      })
+      //利用混入的代码执行防抖和监听图片加载的操作
     },
 
     activated() {
@@ -93,6 +89,9 @@ import {getHomeMultidata, getHomeGoods} from "@/network/home";
     deactivated() {
       //切换路由组件的时候保存当前页面滚动位置的信息
       this.saveY = this.$refs.scroll.getScrollY()
+      //组件未激活的时候解绑自定义事件
+      //Detail组件中goods-list的图片加载完毕无需触发首页的refresh，所以需要解绑自定义事件
+      this.$bus.$off('imageLoadItem', )//解绑事件需指明解绑的回调函数
     },
 
     computed:{
@@ -100,6 +99,7 @@ import {getHomeMultidata, getHomeGoods} from "@/network/home";
         return this.goods[this.currentType].list
       }
     },
+
     methods:{
       //点击切换商品展示页的方法
       tabClick(index){
@@ -157,7 +157,6 @@ import {getHomeMultidata, getHomeGoods} from "@/network/home";
           this.$refs.scroll.finishPullUp()
         })
       },
-
     }
   }
 </script>

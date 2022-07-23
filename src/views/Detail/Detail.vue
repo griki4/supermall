@@ -26,6 +26,7 @@ import Scroll from "@/components/common/scroll/Scroll";
 import GoodsList from "@/components/content/goods/GoodsList";
 
 import {getRecommend, getDetail, Goods, Shop, GoodsParam} from "@/network/detail";
+import {itemImageListenerMixin} from "@/common/mixin";
 
 export default {
   name: "Detail",
@@ -40,6 +41,7 @@ export default {
     Scroll,
     GoodsList
   },
+  mixins:[itemImageListenerMixin],
   data(){
     return {
       iid: null,
@@ -79,9 +81,16 @@ export default {
       this.recommend = res.data.list
     })
   },
+  mounted() {
+    //Home Detail组件在mounted生命周期中都执行了相同的功能，代码一致
+    //因此将这部分代码抽离，并且采用混入的方式引入
+  },
   updated() {
     //获取图片信息后重新计算滚动区域的高度
     // this.$refs.scroll.refresh()
+  },
+  destroyed() {
+    this.$bus.$off('imageLoadItem', this.itemImageListener)
   },
   methods:{
     imageLoad(){
