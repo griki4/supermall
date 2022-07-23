@@ -1,7 +1,7 @@
 <template>
 <!--  商品展示页的小组件，包含商品图片文字描述和价格等详细信息-->
 <div class="goods-item" @click="itemClick">
-    <img :src="goodsItem.show.img" @load="imageLoad">
+    <img :src="showImage" @load="imageLoad">
   <div class="goods-info">
     <p>{{goodsItem.title}}</p>
     <span class="price">{{goodsItem.price}}</span>
@@ -19,6 +19,11 @@ export default {
       default(){
         return {}
       }
+    }
+  },
+  computed:{
+    showImage(){
+      return this.goodsItem.image || this.goodsItem.img || this.goodsItem.show.img
     }
   },
   methods:{

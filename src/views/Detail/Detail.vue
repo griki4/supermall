@@ -7,6 +7,8 @@
     <detail-shop-info :shop="shop"></detail-shop-info>
     <detail-goods-info :detail-info="detailInfo" @imageLoad="imageLoad"></detail-goods-info>
     <detail-param-info :param-info="paramInfo"></detail-param-info>
+    <detail-comment-info :comment-info="commentInfo"></detail-comment-info>
+    <goods-list :goods="recommend"></goods-list>
   </scroll>
 </div>
 </template>
@@ -16,20 +18,28 @@ import DetailNavBar from "@/views/Detail/ChildComponents/DetailNavBar";
 import DetailSwiper from "@/views/Detail/ChildComponents/DetailSwiper";
 import DetailBaseInfo from "@/views/Detail/ChildComponents/DetailBaseInfo";
 import DetailShopInfo from "@/views/Detail/ChildComponents/DetailShopInfo";
-import Scroll from "@/components/common/scroll/Scroll";
 import DetailGoodsInfo from "@/views/Detail/ChildComponents/DetailGoodsInfo";
 import DetailParamInfo from "@/views/Detail/ChildComponents/DetailParamInfo";
-import {getDetail, Goods, Shop, GoodsParam} from "@/network/detail";
+import DetailCommentInfo from "@/views/Detail/ChildComponents/DetailCommentInfo";
+
+import Scroll from "@/components/common/scroll/Scroll";
+import GoodsList from "@/components/content/goods/GoodsList";
+
+import {getRecommend, getDetail, Goods, Shop, GoodsParam} from "@/network/detail";
 
 export default {
   name: "Detail",
-  components:{DetailNavBar,
+  components:{
+    DetailNavBar,
     DetailSwiper,
     DetailBaseInfo,
     DetailShopInfo,
-    Scroll,
     DetailGoodsInfo,
-    DetailParamInfo},
+    DetailParamInfo,
+    DetailCommentInfo,
+    Scroll,
+    GoodsList
+  },
   data(){
     return {
       iid: null,
@@ -37,7 +47,9 @@ export default {
       goods:{},
       shop:{},
       detailInfo:{},
-      paramInfo:{}
+      paramInfo:{},
+      commentInfo:{},
+      recommend:{}
     }
   },
   created() {
@@ -56,6 +68,15 @@ export default {
       this.detailInfo = data.detailInfo
       //获取商品参数信息
       this.paramInfo = new GoodsParam(data.itemParams.info, data.itemParams.rule)
+      //获取商品评论信息
+      if (data.rate.cRate) {
+        this.commentInfo = data.rate.list[0]
+      }
+    })
+
+    //请求推荐商品数据
+    getRecommend().then(res => {
+      this.recommend = res.data.list
     })
   },
   updated() {

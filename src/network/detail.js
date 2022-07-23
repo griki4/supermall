@@ -9,6 +9,11 @@ export function getDetail(iid) {
   })
 }
 
+export function getRecommend() {
+  return request({
+    url:'/recommend'
+  })
+}
 
 //将繁杂的数据进行抽离和整合再传给子组件使用
 //极大地方便子组件使用数据
