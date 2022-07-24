@@ -1,14 +1,14 @@
 <template>
 <div id="detail">
-  <detail-nav-bar class="detail-nav"></detail-nav-bar>
+  <detail-nav-bar class="detail-nav" @itemScroll="itemScroll"></detail-nav-bar>
   <scroll class="detail-content" ref="scroll">
     <detail-swiper :top-images="topImages"></detail-swiper>
     <detail-base-info :goods="goods"></detail-base-info>
     <detail-shop-info :shop="shop"></detail-shop-info>
     <detail-goods-info :detail-info="detailInfo" @imageLoad="imageLoad"></detail-goods-info>
-    <detail-param-info :param-info="paramInfo"></detail-param-info>
-    <detail-comment-info :comment-info="commentInfo"></detail-comment-info>
-    <goods-list :goods="recommend"></goods-list>
+    <detail-param-info :param-info="paramInfo" ref="params"></detail-param-info>
+    <detail-comment-info :comment-info="commentInfo" ref="comment"></detail-comment-info>
+    <goods-list :goods="recommend" ref="recommend"></goods-list>
   </scroll>
 </div>
 </template>
@@ -27,6 +27,7 @@ import GoodsList from "@/components/content/goods/GoodsList";
 
 import {getRecommend, getDetail, Goods, Shop, GoodsParam} from "@/network/detail";
 import {itemImageListenerMixin} from "@/common/mixin";
+import {debounce} from "@/common/utils";
 
 export default {
   name: "Detail",
@@ -51,7 +52,9 @@ export default {
       detailInfo:{},
       paramInfo:{},
       commentInfo:{},
-      recommend:{}
+      recommend:{},
+      themeTopYs:[],
+      getThemeTopYs:null
     }
   },
   created() {
@@ -80,6 +83,17 @@ export default {
     getRecommend().then(res => {
       this.recommend = res.data.list
     })
+
+    //获取offsetTop的函数
+    this.getThemeTopYs = debounce(() => {
+      //获取各类offsetTop的工作应该在图片完全加载完毕之后
+      this.themeTopYs = []
+
+      this.themeTopYs.push(0)
+      this.themeTopYs.push(this.$refs.params.$el.offsetTop)
+      this.themeTopYs.push(this.$refs.comment.$el.offsetTop)
+      this.themeTopYs.push(this.$refs.recommend.$el.offsetTop)
+    },100)
   },
   mounted() {
     //Home Detail组件在mounted生命周期中都执行了相同的功能，代码一致
@@ -95,6 +109,10 @@ export default {
   methods:{
     imageLoad(){
       this.$refs.scroll.refresh()
+      this.getThemeTopYs()//图片加载后获取offsetTop
+    },
+    itemScroll(index) {
+      this.$refs.scroll.scrollTo(0, -this.themeTopYs[index], 100)
     }
   }
 }

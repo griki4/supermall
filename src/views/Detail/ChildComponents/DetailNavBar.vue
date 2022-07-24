@@ -20,13 +20,15 @@ export default {
   components:{BackTop, NavBar},
   data(){
     return {
-      titles: ['商品', '详情', '参数', '推荐'],
+      titles: ['商品', '参数', '评论', '推荐'],
       currentIndex: 0
     }
   },
   methods:{
     itemClick(index) {
       this.currentIndex = index
+      //点击对应标签页面滚动到对应的内容区域
+      this.$emit('itemScroll', index)
     },
     backHome(){
       //点击返回首页事件
