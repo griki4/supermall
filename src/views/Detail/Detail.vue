@@ -1,7 +1,7 @@
 <template>
 <div id="detail">
-  <detail-nav-bar class="detail-nav" @itemScroll="itemScroll"></detail-nav-bar>
-  <scroll class="detail-content" ref="scroll">
+  <detail-nav-bar class="detail-nav" @itemScroll="itemScroll" ref="nav"></detail-nav-bar>
+  <scroll class="detail-content" ref="scroll"  :probe-type="3" @scroll="contentScroll">
     <detail-swiper :top-images="topImages"></detail-swiper>
     <detail-base-info :goods="goods"></detail-base-info>
     <detail-shop-info :shop="shop"></detail-shop-info>
@@ -52,9 +52,10 @@ export default {
       detailInfo:{},
       paramInfo:{},
       commentInfo:{},
-      recommend:{},
+      recommend:[],
       themeTopYs:[],
-      getThemeTopYs:null
+      getThemeTopYs:null,
+      currentIndex:0
     }
   },
   created() {
@@ -90,9 +91,10 @@ export default {
       this.themeTopYs = []
 
       this.themeTopYs.push(0)
-      this.themeTopYs.push(this.$refs.params.$el.offsetTop)
-      this.themeTopYs.push(this.$refs.comment.$el.offsetTop)
-      this.themeTopYs.push(this.$refs.recommend.$el.offsetTop)
+      //部分内容会被导航栏遮挡，所滚动高度应该减去导航栏
+      this.themeTopYs.push(this.$refs.params.$el.offsetTop - 44)
+      this.themeTopYs.push(this.$refs.comment.$el.offsetTop - 44)
+      this.themeTopYs.push(this.$refs.recommend.$el.offsetTop - 44)
     },100)
   },
   mounted() {
@@ -113,6 +115,21 @@ export default {
     },
     itemScroll(index) {
       this.$refs.scroll.scrollTo(0, -this.themeTopYs[index], 100)
+    },
+
+    //实现滚动到对应位置高亮展示标题
+    contentScroll(position){
+      //比较position中Y值与themeTopYs中的值的大小，由此确定DetailNavBar中的currentIndex的值
+      const positionY = -position.y
+      let length = this.themeTopYs.length
+      for (let i = 0; i < length; i++) {
+        if (this.currentIndex !== i) {//为防止高频判断
+          if ((i < length - 1 && positionY >= this.themeTopYs[i] && positionY < this.themeTopYs[i + 1]) || (i === length - 1 && positionY >= this.themeTopYs[i])) {
+            this.currentIndex = i
+            this.$refs.nav.currentIndex = this.currentIndex
+          }
+        }
+      }
     }
   }
 }
