@@ -10,6 +10,8 @@
     <detail-comment-info :comment-info="commentInfo" ref="comment"></detail-comment-info>
     <goods-list :goods="recommend" ref="recommend"></goods-list>
   </scroll>
+  <detail-bottom-bar></detail-bottom-bar>
+  <back-top v-show="showTop" @click.native="backTop"></back-top>
 </div>
 </template>
 
@@ -21,12 +23,13 @@ import DetailShopInfo from "@/views/Detail/ChildComponents/DetailShopInfo";
 import DetailGoodsInfo from "@/views/Detail/ChildComponents/DetailGoodsInfo";
 import DetailParamInfo from "@/views/Detail/ChildComponents/DetailParamInfo";
 import DetailCommentInfo from "@/views/Detail/ChildComponents/DetailCommentInfo";
+import DetailBottomBar from "@/views/Detail/ChildComponents/DetailBottomBar";
 
 import Scroll from "@/components/common/scroll/Scroll";
 import GoodsList from "@/components/content/goods/GoodsList";
 
 import {getRecommend, getDetail, Goods, Shop, GoodsParam} from "@/network/detail";
-import {itemImageListenerMixin} from "@/common/mixin";
+import {itemImageListenerMixin, bakTopMixin} from "@/common/mixin";
 import {debounce} from "@/common/utils";
 
 export default {
@@ -39,10 +42,11 @@ export default {
     DetailGoodsInfo,
     DetailParamInfo,
     DetailCommentInfo,
+    DetailBottomBar,
     Scroll,
     GoodsList
   },
-  mixins:[itemImageListenerMixin],
+  mixins:[itemImageListenerMixin, bakTopMixin],
   data(){
     return {
       iid: null,
@@ -92,9 +96,10 @@ export default {
 
       this.themeTopYs.push(0)
       //部分内容会被导航栏遮挡，所滚动高度应该减去导航栏
-      this.themeTopYs.push(this.$refs.params.$el.offsetTop - 44)
+      this.themeTopYs.push(this.$refs.params.$el.offsetTo - 44)
       this.themeTopYs.push(this.$refs.comment.$el.offsetTop - 44)
       this.themeTopYs.push(this.$refs.recommend.$el.offsetTop - 44)
+      this.themeTopYs.push(Infinity)
     },100)
   },
   mounted() {
@@ -114,7 +119,7 @@ export default {
       this.getThemeTopYs()//图片加载后获取offsetTop
     },
     itemScroll(index) {
-      this.$refs.scroll.scrollTo(0, -this.themeTopYs[index], 100)
+      this.$refs.scroll.scrollTo(0, -this.themeTopYs[index], 200)
     },
 
     //实现滚动到对应位置高亮展示标题
@@ -122,14 +127,15 @@ export default {
       //比较position中Y值与themeTopYs中的值的大小，由此确定DetailNavBar中的currentIndex的值
       const positionY = -position.y
       let length = this.themeTopYs.length
-      for (let i = 0; i < length; i++) {
-        if (this.currentIndex !== i) {//为防止高频判断
-          if ((i < length - 1 && positionY >= this.themeTopYs[i] && positionY < this.themeTopYs[i + 1]) || (i === length - 1 && positionY >= this.themeTopYs[i])) {
+      for (let i = 0; i < length - 1; i++) {
+        if (this.currentIndex !== i) {
+          if (positionY > this.themeTopYs[i] && positionY < this.themeTopYs[i + 1]) {
             this.currentIndex = i
             this.$refs.nav.currentIndex = this.currentIndex
           }
         }
       }
+    this.showTop = positionY > 1000
     }
   }
 }
@@ -144,7 +150,7 @@ export default {
   }
 
   .detail-content {
-    height: calc(100% - 44px);
+    height: calc(100% - 44px - 44px);
     overflow: hidden;
 /*    position: absolute;
     top: 44px;

@@ -1,4 +1,6 @@
 import {debounce} from "@/common/utils";
+import BackTop from "@/components/content/backtop/BackTop";
+
 
 export const itemImageListenerMixin = {
   data(){
@@ -13,5 +15,22 @@ export const itemImageListenerMixin = {
       refresh()//频繁调用时，debounce会清除掉上一次的定时器并开启一个新的定时器
     }
     this.$bus.$on('imageLoadItem', this.itemImageListener)
+  }
+}
+
+//回到顶部组件的混入封装
+export const bakTopMixin = {
+  data(){
+    return {
+      showTop:false
+    }
+  },
+  components:{
+    BackTop
+  },
+  methods:{
+    backTop(){
+      this.$refs.scroll.scrollTo(0, 0)
+    }
   }
 }

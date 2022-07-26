@@ -5,7 +5,7 @@
     </nav-bar>
 <!--    实际效果是tabControl2一直随着scroll滚动，当它滚动超过某个范围的时候tabControl1替换它显示，并且tabControl1和tabControl2全部内容都保持一致
 tabControl2随着scroll滚动已经滚出页面了，不过tabControl1在超过某个范围时接替了它进行显示，此前它一直处于隐藏状态-->
-    <tab-control :titles="['流行', '新款', '精选']" @tabClick="tabClick" ref="tabControl1" v-show="isTabFixed" class="tabControl"></tab-control>
+    <tab-control :titles="['流行', '新款', '精选']" @tabClick="tabClick" ref="tabControl1" v-show="isTabFixed" class="tab-control"></tab-control>
     <scroll class="content"
             ref="scroll"
             :probe-type="3"
@@ -33,7 +33,7 @@ import TabControl from "@/components/content/tabControl/TabControl";
 import Scroll from "@/components/common/scroll/Scroll";
 import BackTop from "@/components/content/backtop/BackTop";
 
-import {itemImageListenerMixin} from "@/common/mixin";
+import {itemImageListenerMixin, bakTopMixin} from "@/common/mixin";
 
 import {getHomeMultidata, getHomeGoods} from "@/network/home";
 
@@ -48,7 +48,7 @@ import {getHomeMultidata, getHomeGoods} from "@/network/home";
       Scroll,
       BackTop
     },
-    mixins:[itemImageListenerMixin],
+    mixins:[itemImageListenerMixin, bakTopMixin],
     data(){
       return{
         banners:[],
@@ -59,7 +59,6 @@ import {getHomeMultidata, getHomeGoods} from "@/network/home";
           sell:{page: 0, list: []}
         },
         currentType:'pop',
-        showTop:false,
         tabOffsetTop: 0,
         //吸顶样式
         isTabFixed:false,
@@ -121,12 +120,6 @@ import {getHomeMultidata, getHomeGoods} from "@/network/home";
       swiperImageLoad(){
         //获取tabControl组件的根元素，在mounted中获取的时候可能轮播图的图片还未加载完成
         this.tabOffsetTop = this.$refs.tabControl2.$el.offsetTop
-      },
-
-      backTop(){
-        //点击图标后返回至滚动开始的位置
-        // this.$refs.scroll.scroll.scrollTo(0,0,500)
-        this.$refs.scroll.scrollTo(0,0)//将scrollTo方法进行封装
       },
 
       contentScroll(position) {
