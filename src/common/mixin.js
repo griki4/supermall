@@ -32,5 +32,6 @@ export const bakTopMixin = {
     backTop(){
       this.$refs.scroll.scrollTo(0, 0)
     }
+    //还可以将显示回到顶部按钮的函数一并封装
   }
 }
