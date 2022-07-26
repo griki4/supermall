@@ -10,7 +10,7 @@
     <detail-comment-info :comment-info="commentInfo" ref="comment"></detail-comment-info>
     <goods-list :goods="recommend" ref="recommend"></goods-list>
   </scroll>
-  <detail-bottom-bar></detail-bottom-bar>
+  <detail-bottom-bar @addToCart="addToCart"></detail-bottom-bar>
   <back-top v-show="showTop" @click.native="backTop"></back-top>
 </div>
 </template>
@@ -135,7 +135,20 @@ export default {
           }
         }
       }
-    this.showTop = positionY > 1000
+      //决定是否显示回到顶部按钮
+      this.showTop = positionY > 1000
+    },
+
+    //实现将商品信息加入Vuex
+    addToCart() {
+      const product = {}
+      product.img = this.topImages[0]
+      product.title = this.goods.title
+      product.desc = this.goods.desc
+      product.price = this.goods.realPrice
+      product.iid = this.iid
+
+      this.$store.dispatch('addCart', product)
     }
   }
 }
