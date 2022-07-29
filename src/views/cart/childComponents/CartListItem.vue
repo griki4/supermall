@@ -20,6 +20,7 @@
 
 <script>
 import checkButton from "@/components/content/checkButton/checkButton";
+
 export default {
   name: "CartListItem",
   components: {
