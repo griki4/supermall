@@ -1,18 +1,19 @@
 <template>
-<div id="detail">
-  <detail-nav-bar class="detail-nav" @itemScroll="itemScroll" ref="nav"></detail-nav-bar>
-  <scroll class="detail-content" ref="scroll"  :probe-type="3" @scroll="contentScroll">
-    <detail-swiper :top-images="topImages"></detail-swiper>
-    <detail-base-info :goods="goods"></detail-base-info>
-    <detail-shop-info :shop="shop"></detail-shop-info>
-    <detail-goods-info :detail-info="detailInfo" @imageLoad="imageLoad"></detail-goods-info>
-    <detail-param-info :param-info="paramInfo" ref="params"></detail-param-info>
-    <detail-comment-info :comment-info="commentInfo" ref="comment"></detail-comment-info>
-    <goods-list :goods="recommend" ref="recommend"></goods-list>
-  </scroll>
-  <detail-bottom-bar @addToCart="addToCart"></detail-bottom-bar>
-  <back-top v-show="showTop" @click.native="backTop"></back-top>
-</div>
+  <div id="detail">
+    <detail-nav-bar class="detail-nav" @itemScroll="itemScroll" ref="nav"></detail-nav-bar>
+    <scroll class="detail-content" ref="scroll" :probe-type="3" @scroll="contentScroll">
+      <detail-swiper :top-images="topImages"></detail-swiper>
+      <detail-base-info :goods="goods"></detail-base-info>
+      <detail-shop-info :shop="shop"></detail-shop-info>
+      <detail-goods-info :detail-info="detailInfo" @imageLoad="imageLoad"></detail-goods-info>
+      <detail-param-info :param-info="paramInfo" ref="params"></detail-param-info>
+      <detail-comment-info :comment-info="commentInfo" ref="comment"></detail-comment-info>
+      <goods-list :goods="recommend" ref="recommend"></goods-list>
+    </scroll>
+    <detail-bottom-bar @addToCart="addToCart"></detail-bottom-bar>
+    <back-top v-show="showTop" @click.native="backTop"></back-top>
+    <!--    <toast :message="message" :show="show"></toast>-->
+  </div>
 </template>
 
 <script>
@@ -27,14 +28,16 @@ import DetailBottomBar from "@/views/Detail/ChildComponents/DetailBottomBar";
 
 import Scroll from "@/components/common/scroll/Scroll";
 import GoodsList from "@/components/content/goods/GoodsList";
+// import Toast from "@/components/common/toast/Toast";
 
 import {getRecommend, getDetail, Goods, Shop, GoodsParam} from "@/network/detail";
 import {itemImageListenerMixin, bakTopMixin} from "@/common/mixin";
 import {debounce} from "@/common/utils";
+import {mapActions} from 'vuex'
 
 export default {
   name: "Detail",
-  components:{
+  components: {
     DetailNavBar,
     DetailSwiper,
     DetailBaseInfo,
@@ -44,22 +47,25 @@ export default {
     DetailCommentInfo,
     DetailBottomBar,
     Scroll,
-    GoodsList
+    GoodsList,
+    // Toast
   },
-  mixins:[itemImageListenerMixin, bakTopMixin],
-  data(){
+  mixins: [itemImageListenerMixin, bakTopMixin],
+  data() {
     return {
       iid: null,
-      topImages:[],
-      goods:{},
-      shop:{},
-      detailInfo:{},
-      paramInfo:{},
-      commentInfo:{},
-      recommend:[],
-      themeTopYs:[],
-      getThemeTopYs:null,
-      currentIndex:0
+      topImages: [],
+      goods: {},
+      shop: {},
+      detailInfo: {},
+      paramInfo: {},
+      commentInfo: {},
+      recommend: [],
+      themeTopYs: [],
+      getThemeTopYs: null,
+      currentIndex: 0,
+      message: '',
+      show: false
     }
   },
   created() {
@@ -100,7 +106,7 @@ export default {
       this.themeTopYs.push(this.$refs.comment.$el.offsetTop - 44)
       this.themeTopYs.push(this.$refs.recommend.$el.offsetTop - 44)
       this.themeTopYs.push(Infinity)
-    },100)
+    }, 100)
   },
   mounted() {
     //Home Detail组件在mounted生命周期中都执行了相同的功能，代码一致
@@ -113,8 +119,9 @@ export default {
   destroyed() {
     this.$bus.$off('imageLoadItem', this.itemImageListener)
   },
-  methods:{
-    imageLoad(){
+  methods: {
+    ...mapActions(['addCart']),
+    imageLoad() {
       this.$refs.scroll.refresh()
       this.getThemeTopYs()//图片加载后获取offsetTop
     },
@@ -123,7 +130,7 @@ export default {
     },
 
     //实现滚动到对应位置高亮展示标题
-    contentScroll(position){
+    contentScroll(position) {
       //比较position中Y值与themeTopYs中的值的大小，由此确定DetailNavBar中的currentIndex的值
       const positionY = -position.y
       let length = this.themeTopYs.length
@@ -148,28 +155,32 @@ export default {
       product.price = this.goods.realPrice
       product.iid = this.iid
 
-      this.$store.dispatch('addCart', product)
+      // this.$store.dispatch('addCart', product)
+      //根据添加结果提示用户，采用toast的方式将提示信息提示给用户
+      this.addCart(product).then(res => {
+        this.$toast.show(res, 1000)
+      })
     }
   }
 }
 </script>
 
 <style scoped>
-  #detail {
-    position: relative;
-    z-index: 9;
-    background-color: #fff;
-    height: 100vh;
-  }
+#detail {
+  position: relative;
+  z-index: 9;
+  background-color: #fff;
+  height: 100vh;
+}
 
-  .detail-content {
-    height: calc(100% - 44px - 44px);
-    overflow: hidden;
-/*    position: absolute;
-    top: 44px;
-    left: 0;
-    right: 0;
-    bottom: 49px;*/
-  }
+.detail-content {
+  height: calc(100% - 44px - 44px);
+  overflow: hidden;
+  /*    position: absolute;
+      top: 44px;
+      left: 0;
+      right: 0;
+      bottom: 49px;*/
+}
 
 </style>
