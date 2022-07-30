@@ -111,6 +111,7 @@ export default {
   mounted() {
     //Home Detail组件在mounted生命周期中都执行了相同的功能，代码一致
     //因此将这部分代码抽离，并且采用混入的方式引入
+    // console.log(this.$toast.test)
   },
   updated() {
     //获取图片信息后重新计算滚动区域的高度

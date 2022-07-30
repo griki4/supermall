@@ -10,7 +10,8 @@ export default {
   data() {
     return {
       isShow: false,
-      message: ''
+      message: '',
+      test: '测试插件功能'
     }
   },
   methods: {
