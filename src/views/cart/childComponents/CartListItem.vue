@@ -7,7 +7,7 @@
     <div class="item-img">
       <img :src="itemInfo.img" alt="商品图片">
     </div>
-    <div class="item-info">
+    <div class="item-info" @click="showDetail">
       <div class="item-title">{{ itemInfo.title }}</div>
       <div class="item-desc">{{ itemInfo.desc }}</div>
       <div class="info-bottom">
@@ -34,9 +34,16 @@ export default {
       }
     }
   },
+  mounted() {
+    console.log(this.itemInfo)
+  },
   methods: {
     itemClick() {
       this.itemInfo.checked = !this.itemInfo.checked
+    },
+
+    showDetail(){
+      this.$router.push('/detail/' + this.itemInfo.iid)
     }
   }
 }
