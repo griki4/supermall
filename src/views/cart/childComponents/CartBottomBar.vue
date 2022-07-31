@@ -49,7 +49,7 @@ export default {
     },
     caculate() {
       if (!this.cartList.length) {
-        alert('请选择至少一件商品')
+        this.$toast.show('请至少选择一件商品', 1500)
       }
     }
   }

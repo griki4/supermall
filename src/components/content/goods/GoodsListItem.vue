@@ -1,7 +1,7 @@
 <template>
 <!--  商品展示页的小组件，包含商品图片文字描述和价格等详细信息-->
 <div class="goods-item" @click="itemClick">
-    <img :src="showImage" @load="imageLoad">
+    <img v-lazy="showImage" @load="imageLoad">
   <div class="goods-info">
     <p>{{goodsItem.title}}</p>
     <span class="price">{{goodsItem.price}}</span>
