@@ -42,7 +42,7 @@ export default {
       this.itemInfo.checked = !this.itemInfo.checked
     },
 
-    showDetail(){
+    showDetail() {
       this.$router.push('/detail/' + this.itemInfo.iid)
     }
   }

@@ -1,115 +1,48 @@
 <template>
-<!--  <div class="wipper">
-      <ul class="list">
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-        <li>商品分类</li>
-      </ul>
-  </div>-->
+<div id="category">
+  <nav-bar class="category-nav">
+    <div slot="center">商品分类</div>
+  </nav-bar>
+  <category-menu :categories="categories"></category-menu>
+</div>
 </template>
 
 <script>
-//让移动端使用滚动功能的时候更加顺滑
-/*import BScroll from "better-scroll"
-  export default {
-    name: "Category",
-    data(){
-      return {
-        scroll: null
-      }
-    },
-    mounted() {
-      this.scroll = new BScroll('.wipper',{
+import NavBar from "@/components/common/navbar/NavBar";
+import CategoryMenu from "@/views/category/ChildComponents/CategoryMenu";
+
+import { getCategory } from "@/network/category";
+
+export default {
+  name: "Category",
+  components:{
+    NavBar,
+    CategoryMenu
+  },
+  data(){
+    return {
+      categories:[]
+    }
+  },
+  created() {
+    this._getCategory()
+  },
+  methods:{
+    _getCategory(){
+      getCategory().then(res => {
+        console.log(res)
+
+        //将请求的分类数据进行存储
+        this.categories = res.data.category.list
       })
     }
-  }*/
+  }
+}
 </script>
 
 <style scoped>
-/*  .wipper {
-    height: 150px;
-    background-color: skyblue;
-    overflow: hidden;
-  }*/
+.category-nav {
+  background-color: var(--color-tint);
+  color: #ffffff;
+}
 </style>

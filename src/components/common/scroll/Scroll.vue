@@ -19,6 +19,10 @@ export default {
     pullUpLoad:{
       type:Boolean,
       default: false
+    },
+    observeDOM:{
+      type:Boolean,
+      default:false
     }
   },
   data(){
@@ -31,7 +35,8 @@ export default {
     this.scroll = new BScroll(this.$refs.wrapper, {
       click:true,//控制类似div之类的元素是否可以被点击
       probeType:this.probeType,
-      pullUpLoad:this.pullUpLoad
+      pullUpLoad:this.pullUpLoad,
+      observeDOM: this.observeDOM,
     })
 
     //2.监听滚动的位置
