@@ -1,39 +1,36 @@
 <template>
-<div id="category">
-  <nav-bar class="category-nav">
-    <div slot="center">商品分类</div>
-  </nav-bar>
-  <category-menu :categories="categories"></category-menu>
-</div>
+  <div class="category">
+    <category-nav-bar></category-nav-bar>
+    <category-menu :title="categoryTitle"></category-menu>
+  </div>
 </template>
 
 <script>
-import NavBar from "@/components/common/navbar/NavBar";
-import CategoryMenu from "@/views/category/ChildComponents/CategoryMenu";
+import CategoryNavBar from "@/views/category/childComponents/CategoryNavBar";
+import CategoryMenu from "@/views/category/childComponents/CategoryMenu";
 
-import { getCategory } from "@/network/category";
+
+import {getCategory} from "@/network/category";
 
 export default {
   name: "Category",
-  components:{
-    NavBar,
+  components: {
+    CategoryNavBar,
     CategoryMenu
   },
   data(){
     return {
-      categories:[]
+      categoryTitle:[]
     }
   },
   created() {
     this._getCategory()
   },
-  methods:{
+  methods: {
     _getCategory(){
       getCategory().then(res => {
         console.log(res)
-
-        //将请求的分类数据进行存储
-        this.categories = res.data.category.list
+        this.categoryTitle = res.data.category.list
       })
     }
   }
@@ -41,8 +38,8 @@ export default {
 </script>
 
 <style scoped>
-.category-nav {
-  background-color: var(--color-tint);
-  color: #ffffff;
+.category {
+  height: 100vh;
+  position: relative;
 }
 </style>
