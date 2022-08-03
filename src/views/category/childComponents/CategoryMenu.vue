@@ -1,12 +1,10 @@
 <template>
   <div class="menu">
     <scroll ref="scroll" :observeDOM="true" class="content-scroll">
-      <div class="content-menu">
-        <div v-for="(item, index) in title" :key="item.maitKey" @click="menuClick(index)"
+        <div v-for="(item, index) in title" :key="item.maitKey" @click="menuClick(index, item.maitKey)"
              :class="{active: index === currentIndex}" class="menu-item">
           {{ item.title }}
         </div>
-      </div>
     </scroll>
   </div>
 </template>
@@ -32,13 +30,20 @@ export default {
       }
     }
   },
+  created() {
+    //为防止页面还未请求到title数据，这里延迟一会再触发事件
+    setTimeout(() => {
+      this.$emit('onChange', this.title[0].maitKey)
+    },300)
+  },
   mounted() {
     this.$refs.scroll.refresh()
   },
   methods: {
-    menuClick(index) {
-      if (this.currentIndex === index) retu50
+    menuClick(index, key) {
+      if (this.currentIndex === index) return
       this.currentIndex = index
+      this.$emit('onChange', key)
     }
   }
 }
@@ -53,7 +58,8 @@ export default {
   border-right: 1px solid #ddd;
 }
 
-.content-menu {
+.content-scroll {
+  height: 100% ;
   overflow: hidden;
 }
 
