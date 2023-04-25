@@ -1,7 +1,8 @@
 <template>
 <!--  商品展示页的小组件，包含商品图片文字描述和价格等详细信息-->
 <div class="goods-item" @click="itemClick">
-    <img v-lazy="showImage" @load="imageLoad">
+<!--  使用懒加载之后点击tabControl会出现文字切换，但是图片不切换的bug-->
+    <img v-lazy="showImage" @load="imageLoad" :key="showImage">
   <div class="goods-info">
     <p>{{goodsItem.title}}</p>
     <span class="price">{{goodsItem.price}}</span>
